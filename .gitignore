@@ -26,6 +26,4 @@ dist-ssr
 # Ignore all env files
 *.env
 
-tsconfig.json
 package-lock.json
-vite.config.js
