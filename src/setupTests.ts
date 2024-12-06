@@ -1,6 +1,5 @@
 import { vi } from "vitest";
-import { createPinia } from "pinia";
-import { useWeatherStore } from "./stores/weather";
+import { createPinia, setActivePinia } from "pinia";
 
 const mockedWeatherData = {
 	name: "Warsaw",
@@ -10,7 +9,7 @@ const mockedWeatherData = {
 
 export function setupTests() {
 	const pinia = createPinia();
-	const weatherStore = useWeatherStore(pinia);
+	setActivePinia(pinia);
 
 	vi.mock("../stores/weather", () => ({
 		useWeatherStore: vi.fn().mockReturnValue({
