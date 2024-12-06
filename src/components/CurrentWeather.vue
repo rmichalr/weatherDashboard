@@ -10,9 +10,9 @@
 			</button>
 		</div>
 		<div v-if="weather" class="p-6 bg-gray-800 text-white shadow rounded">
-			<h2 class="text-2xl font-bold">{{ weather.name }}</h2>
-			<p class="text-lg">Temperature: {{ weather.main.temp }}°C</p>
-			<p>Condition: {{ weather.weather[0].description }}</p>
+			<h2 class="text-2xl font-bold" data-test="city">{{ weather.name }}</h2>
+			<p class="text-lg" data-test="temperature">Temperature: {{ weather.main.temp }}°C</p>
+			<p data-test="condition">Condition: {{ weather.weather[0].description }}</p>
 		</div>
 		<div v-else-if="error" class="p-6 bg-red-100 text-red-600">
 			<p>Error: {{ error }}</p>
@@ -37,11 +37,12 @@ export default defineComponent({
 		const city = ref('');
 		const hasSearched = ref(false);
 
-		const getWeather = async () => {
+		const getWeather = async (): Promise<void> => {
 			hasSearched.value = true;
 			store.setLoading(true);
 			try {
-				await store.fetchWeather(city.value);
+				const response: any = await store.fetchWeather(city.value);
+				store.setWeather(response.data);
 			} catch (error: any) {
 				store.setError(error.message);
 			} finally {
@@ -71,7 +72,7 @@ export default defineComponent({
 	width: 10px;
 	height: 10px;
 	border-radius: 50%;
-	background-color: #333;
+	background-color: var(--loading-dot-color);
 	animation: loading 1s infinite;
 }
 
