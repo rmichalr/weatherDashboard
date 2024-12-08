@@ -29,14 +29,14 @@ export const useWeatherStore = defineStore("weather", {
 		async fetchWeather(location: string): Promise<void> {
 			try {
 				const response = await api.fetchWeather(location);
-				this.$state.weather = response;
+				this.$state.weather = response.data;
 				this.$state.error = null;
 			} catch (err: any) {
-				this.$state.error =
-					err.response?.data?.message || "Unable to fetch weather";
-				this.$state.weather = null;
+				this.$state.error = "Unable to fetch weather for this location";
+				throw err;
 			}
 		},
+
 		setError(error: string) {
 			this.$state.error = error;
 		},
@@ -45,7 +45,7 @@ export const useWeatherStore = defineStore("weather", {
 		},
 		setWeather(weather: Record<string, any>) {
 			this.$state.weather = weather;
-		}
+		},
 	},
 	getters: {
 		weatherData: (state) => state.weather,
