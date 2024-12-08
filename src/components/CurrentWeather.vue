@@ -4,7 +4,7 @@
 			<input v-model="city" type="text" placeholder="Enter city name"
 				class="h-10 p-2 border border-gray-400 rounded-l-md w-4/5" @keydown.enter="handleEnterKey"
 				@input="fetchCities" />
-			<button @click="(event) => getWeather()"
+			<button @click="getWeather"
 				class="h-10 p-2 bg-green-500 text-white border border-gray-400 rounded-r-md rounded-l-none w-1/5">
 				Check
 			</button>
@@ -52,14 +52,11 @@ export default defineComponent({
 		const hasSearched = ref(false);
 		const showSuggestions = ref(true);
 
-		const getWeather = async (cityName?: string) => {
-			if (!cityName) {
-				cityName = city.value;
-			}
+		const getWeather = async () => {
 			hasSearched.value = true;
 			weatherStore.setLoading(true);
 			try {
-				const response: any = await weatherStore.fetchWeather(cityName);
+				const response: any = await weatherStore.fetchWeather(city.value);
 				weatherStore.setWeather(response.data);
 			} catch (error: any) {
 				city.value = '';
@@ -93,6 +90,10 @@ export default defineComponent({
 
 		const handleEnterKey = () => {
 			getWeather();
+			hideSuggestions();
+		}
+
+		const hideSuggestions = () => {
 			showSuggestions.value = false;
 		}
 
@@ -107,9 +108,13 @@ export default defineComponent({
 			isLoading: computed(() => weatherStore.isLoading),
 			hasSearched,
 			showSuggestions,
+			hideSuggestions,
 			cities: computed(() => citiesStore.getCities),
 		};
 	},
+	beforeMount() {
+		document.addEventListener('click', this.hideSuggestions);
+	}
 });
 </script>
 
