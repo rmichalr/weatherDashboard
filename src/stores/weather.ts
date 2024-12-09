@@ -1,15 +1,7 @@
 import { defineStore } from "pinia";
 import { Api } from "../services/api";
 import { ApiDto } from "../models/apiDto";
-
-interface WeatherState {
-	weather: Record<string, any> | null;
-	error: string | null;
-	loading: boolean;
-	api: {
-		fetchWeather: (location: string) => Promise<any>;
-	};
-}
+import { ref } from "vue";
 
 const preferences: ApiDto = {
 	apiKey: import.meta.env.VITE_API_KEY,
@@ -18,38 +10,43 @@ const preferences: ApiDto = {
 
 const api = new Api(preferences);
 
-export const useWeatherStore = defineStore("weather", {
-	state: (): WeatherState => ({
-		weather: null,
-		error: null,
-		loading: true,
-		api: api,
-	}),
-	actions: {
-		async fetchWeather(location: string): Promise<void> {
-			try {
-				const response = await api.fetchWeather(location);
-				this.$state.weather = response.data;
-				this.$state.error = null;
-			} catch (err: any) {
-				this.$state.error = "Unable to fetch weather for this location";
-				throw err;
-			}
-		},
+export const useWeatherStore = defineStore("weather", () => {
+	const weather = ref<Record<string, any> | null>(null);
+	const error = ref<string | null>(null);
+	const loading = ref<boolean>(true);
 
-		setError(error: string) {
-			this.$state.error = error;
-		},
-		setLoading(loading: boolean) {
-			this.$state.loading = loading;
-		},
-		setWeather(weather: Record<string, any>) {
-			this.$state.weather = weather;
-		},
-	},
-	getters: {
-		weatherData: (state) => state.weather,
-		weatherError: (state) => state.error,
-		isLoading: (state) => state.loading,
-	},
+	const fetchWeather = async (location: string) => {
+		try {
+			const response = await api.fetchWeather(location);
+			setWeather(response.data);
+			error.value = null;
+		} catch (err: any) {
+			error.value = "Unable to fetch weather for this location";
+			throw err;
+		} finally {
+			loading.value = false;
+		}
+	};
+
+	const setError = (caughtError: string) => {
+		error.value = caughtError;
+	};
+
+	const setLoading = (isLoading: boolean) => {
+		loading.value = isLoading;
+	};
+
+	const setWeather = (newWeather: Record<string, any>) => {
+		weather.value = newWeather;
+	};
+
+	return {
+		weather,
+		error,
+		loading,
+		fetchWeather,
+		setError,
+		setLoading,
+		setWeather,
+	};
 });

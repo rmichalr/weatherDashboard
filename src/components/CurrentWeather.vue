@@ -1,18 +1,113 @@
+<script setup>
+import { ref, onMounted, onUnmounted } from 'vue';
+import { useWeatherStore } from '../stores/weather';
+import { useCitiesStore } from '../stores/cities';
+import { watchDebounced } from '@vueuse/core';
+
+const weatherStore = useWeatherStore();
+const citiesStore = useCitiesStore();
+const city = ref('');
+const hasSearched = ref(false);
+const showSuggestions = ref(true);
+const weather = ref(null);
+const error = ref(null);
+const cities = ref([]);
+const loading = ref(false);
+const isLoading = ref(false);
+
+const getWeather = async () => {
+	hasSearched.value = true;
+	weatherStore.setLoading(true);
+	try {
+		await weatherStore.fetchWeather(city.value);
+		hasSearched.value = true;
+	} catch (error) {
+		city.value = '';
+	} finally {
+		weatherStore.setLoading(false);
+	}
+};
+
+const fetchCities = async () => {
+	showSuggestions.value = true;
+	if (city.value.length >= 3) {
+		try {
+			const citiesArray = await citiesStore.fetchCities(city.value);
+			if (citiesArray) {
+				citiesStore.setCities(citiesArray);
+			} else {
+				console.error('No response received from fetchCities');
+			}
+		} catch (error) {
+			console.error(error);
+			citiesStore.setCities([]);
+		}
+	}
+};
+
+const selectCity = (selectedCity) => {
+	city.value = selectedCity.name;
+	citiesStore.setCities([]);
+	getWeather();
+};
+
+const handleEnterKey = () => {
+	getWeather();
+	hideSuggestions();
+};
+
+const hideSuggestions = () => {
+	showSuggestions.value = false;
+};
+
+const setHasSearched = (value) => {
+	hasSearched.value = value;
+};
+
+watchDebounced(
+	city,
+	async () => {
+		showSuggestions.value = true;
+		if (city.value.length >= 3) {
+			try {
+				const citiesArray = await citiesStore.fetchCities(city.value);
+				if (citiesArray) {
+					citiesStore.setCities(citiesArray);
+				} else {
+					console.error('No response received from fetchCities');
+				}
+			} catch (error) {
+				console.error(error);
+				citiesStore.setCities([]);
+			}
+		}
+	},
+	{ debounce: 500 }
+);
+
+onMounted(() => {
+	document.addEventListener('click', hideSuggestions);
+});
+
+onUnmounted(() => {
+	document.removeEventListener('click', hideSuggestions);
+});
+</script>
+
 <template>
 	<div class="flex flex-col gap-5 relative">
 		<div class="flex items-center">
 			<input v-model="city" type="text" placeholder="Enter city name"
-				class="h-10 p-2 border border-gray-400 rounded-l-md w-4/5" @keydown.enter="handleEnterKey"
-				@input="fetchCities" />
+				class="h-10 p-2 border border-gray-400 rounded-l-md w-4/5" @keydown.enter="handleEnterKey" />
 			<button @click="getWeather"
 				class="h-10 p-2 bg-green-500 text-white border border-gray-400 rounded-r-md rounded-l-none w-1/5">
 				Check
 			</button>
 		</div>
-		<div v-if="showSuggestions && cities && cities.length > 0"
+		<div v-if="showSuggestions && citiesStore.cities && citiesStore.cities.length > 0"
 			class="absolute top-10 bg-white w-full text-black text-left rounded-b-md p-2">
 			<ul>
-				<li v-for="city in cities" :key="city.id" @click="selectCity(city)"
+				<li v-for="city in citiesStore.cities" :key="city.id" @click="selectCity(city)"
 					class="cursor-pointer p-2 hover:bg-gray-300">
 					{{ city.name }} ({{ city.country }})
 					<small v-if="city.local_names">
@@ -21,10 +116,10 @@
 				</li>
 			</ul>
 		</div>
-		<div v-if="weather" class="p-6 bg-gray-800 text-white shadow rounded">
-			<h2 class="text-2xl font-bold" data-test="city">{{ weather.name }}</h2>
-			<p class="text-lg" data-test="temperature">Temperature: {{ weather.main.temp }}°C</p>
-			<p data-test="condition">Condition: {{ weather.weather[0].description }}</p>
+		<div v-if="hasSearched && weatherStore.weather" class="p-6 bg-gray-800 text-white shadow rounded">
+			<h2 class="text-2xl font-bold" data-test="city">{{ weatherStore.weather.name }}</h2>
+			<p class="text-lg" data-test="temperature">Temperature: {{ weatherStore.weather.main.temp }}°C</p>
+			<p data-test="condition">Condition: {{ weatherStore.weather.weather[0].description }}</p>
 		</div>
 		<div v-else-if="error" class="p-6 bg-red-100 text-red-600">
 			<p>Error: {{ error }}</p>
@@ -38,85 +133,6 @@
 		</div>
 	</div>
 </template>
-
-<script lang="ts">
-import { computed, defineComponent, ref } from 'vue';
-import { useWeatherStore } from '../stores/weather';
-import { useCitiesStore } from "../stores/cities";
-
-export default defineComponent({
-	setup() {
-		const weatherStore = useWeatherStore();
-		const citiesStore = useCitiesStore();
-		const city = ref('');
-		const hasSearched = ref(false);
-		const showSuggestions = ref(true);
-
-		const getWeather = async () => {
-			hasSearched.value = true;
-			weatherStore.setLoading(true);
-			try {
-				const response: any = await weatherStore.fetchWeather(city.value);
-				weatherStore.setWeather(response.data);
-			} catch (error: any) {
-				city.value = '';
-			} finally {
-				weatherStore.setLoading(false);
-			}
-		};
-
-		const fetchCities = async () => {
-			showSuggestions.value = true;
-			if (city.value.length >= 3) {
-				try {
-					const citiesArray: any[] = await citiesStore.fetchCities(city.value);
-					if (citiesArray) {
-						citiesStore.setCities(citiesArray);
-					} else {
-						console.error('No response received from fetchCities');
-					}
-				} catch (error) {
-					console.error(error);
-					citiesStore.setCities([]);
-				}
-			}
-		};
-
-		const selectCity = (selectedCity: any) => {
-			city.value = selectedCity.name;
-			citiesStore.setCities([]);
-			getWeather();
-		};
-
-		const handleEnterKey = () => {
-			getWeather();
-			hideSuggestions();
-		}
-
-		const hideSuggestions = () => {
-			showSuggestions.value = false;
-		}
-
-		return {
-			city,
-			getWeather,
-			selectCity,
-			fetchCities,
-			handleEnterKey,
-			weather: computed(() => weatherStore.weatherData),
-			error: computed(() => weatherStore.weatherError),
-			isLoading: computed(() => weatherStore.isLoading),
-			hasSearched,
-			showSuggestions,
-			hideSuggestions,
-			cities: computed(() => citiesStore.getCities),
-		};
-	},
-	beforeMount() {
-		document.addEventListener('click', this.hideSuggestions);
-	}
-});
-</script>
 
 <style scoped>
 .loading-text {
