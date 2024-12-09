@@ -1,3 +1,4 @@
+/// <reference types="vue" />
 import { mount } from "@vue/test-utils";
 import { describe, it, expect } from "vitest";
 import CurrentWeather from "./CurrentWeather.vue";
@@ -21,7 +22,7 @@ describe("Async Functions", () => {
 			name: "Warsaw",
 			main: { temp: 1.64 },
 			weather: [{ description: "broken clouds" }],
-		});
+		});	
 	});
 
 	it("should render the weather data", async () => {
@@ -29,6 +30,7 @@ describe("Async Functions", () => {
 		const weatherStore = useWeatherStore();
 
 		const weatherResult = await fetchWeather();
+		wrapper.vm.setHasSearched(true);
 		weatherStore.setWeather(weatherResult);
 		await wrapper.vm.$nextTick();
 
