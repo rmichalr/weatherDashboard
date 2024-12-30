@@ -5,4 +5,9 @@
 	--primary-color-hover: #535bf2;
 	--button-background-color: #1a1a1a;
 	--loading-dot-color: #333;
+	--light-gray: #ccc;
+	--dark-gray: #333;
+	--medium-gray: #444;
+	--link-color: #337ab7;
+	--link-color-hover: #23527c;
   }
