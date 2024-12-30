@@ -3,9 +3,12 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import { useWeatherStore } from '../stores/weather';
 import { useCitiesStore } from '../stores/cities';
 import { watchDebounced } from '@vueuse/core';
+import { useSearchHistoryStore } from '../stores/searchHistory'
+
 
 const weatherStore = useWeatherStore();
 const citiesStore = useCitiesStore();
+const { searches, addSearch, clearSearches } = useSearchHistoryStore();
 const city = ref('');
 const hasSearched = ref(false);
 const showSuggestions = ref(true);
@@ -21,6 +24,13 @@ const getWeather = async () => {
 	try {
 		await weatherStore.fetchWeather(city.value);
 		hasSearched.value = true;
+		addSearch({
+			city: city.value,
+			weather: weatherStore.weather.weather[0].main,
+			temperature: weatherStore.weather.main.temp,
+			icon: weatherStore.weather.weather[0].icon,
+			date: new Date().toLocaleString()
+		});
 	} catch (error) {
 		city.value = '';
 	} finally {
@@ -119,6 +129,8 @@ onUnmounted(() => {
 		<div v-if="hasSearched && weatherStore.weather" class="p-6 bg-gray-800 text-white shadow rounded">
 			<h2 class="text-2xl font-bold" data-test="city">{{ weatherStore.weather.name }}</h2>
 			<p class="text-lg" data-test="temperature">Temperature: {{ weatherStore.weather.main.temp }}°C</p>
+			<img :src="`https://openweathermap.org/img/wn/${weatherStore.weather.weather[0].icon}@2x.png`"
+				:alt="weatherStore.weather.weather[0].description" class="w-16 h-16 mx-auto" />
 			<p data-test="condition">Condition: {{ weatherStore.weather.weather[0].description }}</p>
 		</div>
 		<div v-else-if="error" class="p-6 bg-red-100 text-red-600">
