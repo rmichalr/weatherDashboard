@@ -53,10 +53,10 @@ function handleClearData() {
 		class="historical-search-list" />
 	<teleport to="body">
 		<div v-if="isRevealed"
-			class="confirm-dialog shadow-navigation text-white fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-backgroundColor border border-white rounded p-6 text-secondary text-center">
+			class="confirm-dialog shadow-navigation text-white fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-backgroundColor border border-white rounded p-6 text-secondary text-center w-3/4 sm:w-1/2 lg:w-1/3">
 			<h2 class="mb-6 font-bold">Are you sure you want to clear all historical searches?</h2>
-			<button @click="confirm" class="mr-2 hover:bg-primary hover:text-secondary">Yes</button>
-			<button @click="cancel" class="ml-2 hover:bg-primary hover:text-secondary">No</button>
+			<button @click="confirm" class="mr-2 bg-buttonBackgroundColor hover:bg-primary hover:text-secondary">Yes</button>
+			<button @click="cancel" class="ml-2 bg-buttonBackgroundColor hover:bg-primary hover:text-secondary">No</button>
 		</div>
 	</teleport>
 </template>

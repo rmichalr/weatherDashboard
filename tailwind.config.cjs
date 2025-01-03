@@ -9,6 +9,7 @@ export default {
 				primaryHover: 'var(--primary-color-hover)',
 				linkColorHover: 'var(--link-color-hover)',
 				backgroundColor: 'var(--background-color)',
+				buttonBackgroundColor: 'var(--button-background-color)',
 				navigationColor: 'var(--navigation-color)',
 				panelColor: 'var(--panel-color)',
 			},
