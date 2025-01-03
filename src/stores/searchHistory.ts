@@ -12,7 +12,7 @@ export const useSearchHistoryStore = defineStore("searchHistory", () => {
 	loadSearches();
 
 	const saveSearch = (search: any) => {
-		searches.value.push(search);
+		searches.value.unshift(search);
 		localStorage.setItem("searches", JSON.stringify(searches.value));
 	};
 

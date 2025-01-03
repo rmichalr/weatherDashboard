@@ -1,5 +1,4 @@
 <script setup>
-import { defineProps } from 'vue'
 import HistoricalSearchItem from './HistoricalSearchItem.vue'
 
 defineProps({
@@ -8,7 +7,7 @@ defineProps({
 })
 </script>
 <template>
-	<div class="mt-2 rounded-lg overflow-y-auto historical-search-list" :class="{ 'hidden': isCollapsed }">
+	<div class="mt-2 rounded-lg overflow-y-auto historical-search-list text-secondary shadow-navigation" :class="{ 'hidden': isCollapsed }">
 		<ul>
 			<li v-for="search in searches" :key="search.id"
 				class="p-4 shadow-md text-left historical-search-item flex">
