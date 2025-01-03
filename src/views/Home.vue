@@ -9,18 +9,17 @@ export default defineComponent({
 </script>
 
 <template>
-	<nav class="flex items-center justify-start gap-4 border-b-2 border-solid border-gray-300 shadow-md p-5">
-		<router-link to="/" class="text-2xl font-bold text-white">Weather Dashboard</router-link>
-		<router-link to="/about" class="text-2xl text-white">About</router-link>
-	</nav>
-	<div class="container mx-auto p-4 flex flex-row gap-3">
-		<div class="w-1/3">
+	<div class="container mx-auto p-4 flex flex-col lg:flex-row gap-3">
+		<div class="w-full lg:w-1/3 mx-auto flex flex-col gap-5">
+			<CurrentWeather />
 			<HistoricalSearches />
 		</div>
-		<div class="w-1/3 mx-auto">
-			<CurrentWeather />
+		<div class="w-full lg:w-1/3 lg:order-first">
+			<!-- WEATHER CHARTS -->
 		</div>
-		<div class="w-1/3"></div>
+		<div class="w-full lg:w-1/3">
+			<!-- MAPS -->
+		</div>
 	</div>
 	<div class="modal-overlay"></div>
 </template>

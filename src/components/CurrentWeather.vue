@@ -108,9 +108,9 @@ onUnmounted(() => {
 	<div class="flex flex-col gap-5 relative">
 		<div class="flex items-center">
 			<input v-model="city" type="text" placeholder="Enter city name"
-				class="h-10 p-2 border border-gray-400 rounded-l-md w-4/5" @keydown.enter="handleEnterKey" />
+				class="h-10 p-2 shadow-navigation rounded-l-md w-4/5 focus:outline-none focus:ring-2 focus:ring-primary focus:visible:ring-2 focus:visible:ring-primary focus:visible:ring-offset-2 focus:visible:ring-offset-white dark:focus:visible:ring-offset-slate-900" @keydown.enter="handleEnterKey" />
 			<button @click="getWeather"
-				class="h-10 p-2 bg-green-500 text-white border border-gray-400 rounded-r-md rounded-l-none w-1/5">
+				class="h-10 p-2 bg-secondary text-primary hover:bg-primary hover:text-secondary shadow-navigation rounded-r-md rounded-l-none w-1/5">
 				Check
 			</button>
 		</div>
@@ -126,7 +126,7 @@ onUnmounted(() => {
 				</li>
 			</ul>
 		</div>
-		<div v-if="hasSearched && weatherStore.weather" class="p-6 bg-gray-800 text-white shadow rounded">
+		<div v-if="hasSearched && weatherStore.weather" class="p-6 rounded bg-panelColor text-white shadow-navigation">
 			<h2 class="text-2xl font-bold" data-test="city">{{ weatherStore.weather.name }}</h2>
 			<p class="text-lg" data-test="temperature">Temperature: {{ weatherStore.weather.main.temp }}°C</p>
 			<img :src="`https://openweathermap.org/img/wn/${weatherStore.weather.weather[0].icon}@2x.png`"
@@ -156,7 +156,7 @@ onUnmounted(() => {
 	width: 10px;
 	height: 10px;
 	border-radius: 50%;
-	background-color: var(--loading-dot-color);
+	background-color: var(--panel-color);
 	animation: loading 1s infinite;
 }
 

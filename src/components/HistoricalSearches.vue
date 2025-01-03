@@ -33,7 +33,7 @@ function handleClearData() {
 
 <template>
 	<div class="flex historical-searches" v-if="searches.length > 0">
-		<div class="flex items-center cursor-pointer" @click="isCollapsed = !isCollapsed">
+		<div class="flex items-center cursor-pointer text-white" @click="isCollapsed = !isCollapsed">
 			<h2 class="text-xl font-bold">Historical Searches</h2>
 			<span class="ml-2" :class="{ 'rotate-180': isCollapsed, 'rotate-0': !isCollapsed }">
 				<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
@@ -44,7 +44,7 @@ function handleClearData() {
 		</div>
 		<a href="#" 
 		   @click.prevent="handleClearData" 
-		   class="ml-auto text-blue-500 hover:underline"
+		   class="ml-auto text-white hover:font-bold hover:text-linkColorHover"
 		   data-test="clear-data-link">Clear Data</a>
 	</div>
 	<HistoricalSearchList 
@@ -53,10 +53,10 @@ function handleClearData() {
 		class="historical-search-list" />
 	<teleport to="body">
 		<div v-if="isRevealed"
-			class="confirm-dialog fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#333] rounded p-2 text-center">
-			<h2 class="mb-2">Are you sure you want to clear all historical searches?</h2>
-			<button @click="confirm" class="mr-2">Yes</button>
-			<button @click="cancel" class="ml-2">No</button>
+			class="confirm-dialog shadow-navigation text-white fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-backgroundColor border border-white rounded p-6 text-secondary text-center">
+			<h2 class="mb-6 font-bold">Are you sure you want to clear all historical searches?</h2>
+			<button @click="confirm" class="mr-2 hover:bg-primary hover:text-secondary">Yes</button>
+			<button @click="cancel" class="ml-2 hover:bg-primary hover:text-secondary">No</button>
 		</div>
 	</teleport>
 </template>
@@ -67,19 +67,11 @@ function handleClearData() {
 }
 
 .historical-search-item:nth-child(odd) {
-	background-color: var(--dark-gray);
+	background-color: var(--row-odd-color);
 }
 
 .historical-search-item:nth-child(even) {
-	background-color: var(--medium-gray);
-}
-
-.clear-data-link {
-	color: var(--link-color);
-}
-
-.clear-data-link:hover {
-	color: var(--link-color-hover);
+	background-color: var(--row-even-color);
 }
 
 .confirm-dialog {
